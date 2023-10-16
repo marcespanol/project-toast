@@ -2,29 +2,24 @@ import React, { Children } from 'react';
 
 import Button from '../Button';
 
+import { ToastContext } from '../ToastProvider';
 import styles from './ToastPlayground.module.css';
 import ToastShelf from '../ToastShelf/ToastShelf';
 
 const VARIANT_OPTIONS = ['notice', 'warning', 'success', 'error'];
 
 function ToastPlayground() {
+  const { createToast } = React.useContext(ToastContext);
   const [message, setMessage] = React.useState('');
   const [variant, setVariant] = React.useState(VARIANT_OPTIONS[0]);
-  const [toastArr, setToastArr] = React.useState([]);
 
   function handleAddToast(event) {
     event.preventDefault()
 
-    setToastArr(
-      [...toastArr, {id: crypto.randomUUID(), message, variant}]
-    )
+    createToast(message, variant)
+    
     setMessage('')
     setVariant(VARIANT_OPTIONS[0])
-  }
-
-  function handelRemoveToast(id) {
-    const newArr = toastArr.filter(t => t.id !== id)
-    setToastArr(newArr)
   }
 
   return (
@@ -34,12 +29,7 @@ function ToastPlayground() {
         <h1>Toast Playground</h1>
       </header>
       
-      <ToastShelf
-        message={message}
-        variant={variant}
-        toastArr={toastArr}
-        handleRemoveItem={handelRemoveToast}
-      >
+      <ToastShelf>
         {message}
       </ToastShelf>
       
