@@ -6,16 +6,16 @@ export const ToastContext = createContext();
 
 function ToastProvider({ children }) {
   const [toastArr, setToastArr] = React.useState([
-    {
-      id: crypto.randomUUID(),
-      message: 'It works!',
-      variant: 'success',
-    },
-    {
-      id: crypto.randomUUID(),
-      message: 'Logged in',
-      variant: 'success',
-    },
+    // {
+    //   id: crypto.randomUUID(),
+    //   message: 'It works!',
+    //   variant: 'success',
+    // },
+    // {
+    //   id: crypto.randomUUID(),
+    //   message: 'Logged in',
+    //   variant: 'success',
+    // },
   ]);
 
   function createToast(message, variant) {
@@ -28,6 +28,20 @@ function ToastProvider({ children }) {
     const newArr = toastArr.filter(t => t.id !== id)
     setToastArr(newArr)
   }
+
+  React.useEffect(() => {
+    function handleKeydown(event) {
+      if(event.code === 'Escape') {
+        setToastArr([])
+      }
+    }
+
+    window.addEventListener('keydown', handleKeydown)
+
+    return () => {
+      window.removeEventListener('keydown', handleKeydown)
+    }
+  }, [])
 
   return (
     <ToastContext.Provider
