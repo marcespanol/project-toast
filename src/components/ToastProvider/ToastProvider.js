@@ -1,27 +1,40 @@
-import React, { Children } from 'react';
+import React from 'react';
 
-import { createContext } from 'react';
+import useKeydown from '../../hooks/useKeydown';
 
-export const ToastContext = createContext();
+export const ToastContext = React.createContext();
 
 function ToastProvider({ children }) {
   const [toastArr, setToastArr] = React.useState([
-    // {
-    //   id: crypto.randomUUID(),
-    //   message: 'It works!',
-    //   variant: 'success',
-    // },
-    // {
-    //   id: crypto.randomUUID(),
-    //   message: 'Logged in',
-    //   variant: 'success',
-    // },
+    {
+      id: crypto.randomUUID(),
+      message: 'It works!',
+      variant: 'success',
+    },
+    {
+      id: crypto.randomUUID(),
+      message: 'Logged in',
+      variant: 'success',
+    },
   ]);
 
+  const handleEscape = React.useCallback(() => {
+    setToastArr([]);
+  }, [])
+
+  useKeydown('Escape', handleEscape)
+
   function createToast(message, variant) {
-    setToastArr(
-      [...toastArr, {id: crypto.randomUUID(), message, variant}]
-    )
+    const nextToasts = [
+      ...toastArr,
+      {
+        id: crypto.randomUUID(),
+        message,
+        variant,
+      },
+    ];
+
+    setToastArr(nextToasts);
   }
 
   function removeToast(id) {
@@ -29,23 +42,13 @@ function ToastProvider({ children }) {
     setToastArr(newArr)
   }
 
-  React.useEffect(() => {
-    function handleKeydown(event) {
-      if(event.code === 'Escape') {
-        setToastArr([])
-      }
-    }
-
-    window.addEventListener('keydown', handleKeydown)
-
-    return () => {
-      window.removeEventListener('keydown', handleKeydown)
-    }
-  }, [])
-
   return (
     <ToastContext.Provider
-      value={{ toastArr, createToast, removeToast }}
+      value={{
+        toastArr, 
+        removeToast,
+        createToast
+      }}
     >
       {children}
     </ToastContext.Provider>
